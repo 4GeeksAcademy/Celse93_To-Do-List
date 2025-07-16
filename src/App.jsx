@@ -4,14 +4,18 @@ import { Box } from "@mui/material";
 import { Item } from "./components/Item";
 
 
-
 export const App = () => {
   const [inputValue, setInputValue] = useState("");
   const [tasks, setTasks] = useState([]);
 
   const addItem = () => {
     setTasks([...tasks, { id: crypto.randomUUID(), name: inputValue }]);
+    setInputValue("")
   }
+
+  const inputRegex = /^[a-zA-Z ]*$/;
+
+  const isInputOk = inputRegex.test(inputValue) && !(inputValue.trim() === "")
 
 
   return (
@@ -28,15 +32,10 @@ export const App = () => {
             setInputValue(e.target.value);
           }}
           onKeyDown={(e) => {
-            e.key == "Enter" && e.target.checkValidity()
+            e.key == "Enter" && isInputOk
               ? addItem()
               : "";
           }}
-          onInvalid={(e) => {
-            inputValue === "" 
-              ? alert("Enter a task!")
-              : alert("Task can only contain letters!");
-          }} 
         ></input>
         <Box sx={{ mt:"15px" }}>
           {tasks.length == 0
