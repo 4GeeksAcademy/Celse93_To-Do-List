@@ -1,25 +1,47 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useState } from "react";
 
-export const Item = ({ task, setTasksList, tasksList }) => {
+export const Item = ({ task, setTasksList }) => {
   const [showIcon, setShowIcon] = useState(false);
 
-  function deleteItem() {
-    setTasksList(tasksList.filter((item) => item.id != task.id));
-  }
+  const getList = () => {
+    fetch("https://playground.4geeks.com/todo/users/celse", {
+      method: "GET",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        setTasksList(responseJson.todos);
+      })
+      .catch((error) => {
+        console.log("Oh No! There was a problem: \n", error);
+      });
+  };
+
+  const deleteItem = () => {
+    fetch(`https://playground.4geeks.com/todo/todos/${task.id}`, {
+      method: "DELETE",
+    }).then(getList);
+  };
+
+  const handleOnClick = (e) => {
+    e.target = deleteItem();
+  };
+
+  const handleOnMouseOver = (e) => {
+    e.target = setShowIcon(true);
+  };
+
+  const handleOnMouseLeave = (e) => {
+    e.target = setShowIcon(false);
+  };
 
   return (
-    <p
-      onMouseOver={(e) => (e.target = setShowIcon(true))}
-      onMouseLeave={(e) => (e.target = setShowIcon(false))}
-    >
-      {task.name}{" "}
+    <p onMouseOver={handleOnMouseOver} onMouseLeave={handleOnMouseLeave}>
+      {task.label}{" "}
       {showIcon ? (
-        <DeleteIcon
-          sx={{ ml: "15px" }}
-          type="button"
-          onClick={(e) => (e.target = deleteItem())}
-        />
+        <DeleteIcon sx={{ ml: "15px" }} type="button" onClick={handleOnClick} />
       ) : (
         ""
       )}
